@@ -262,6 +262,11 @@ func resourceArtifactRegistryRepositoryRead(d *schema.ResourceData, meta interfa
 	}
 	billingProject = project
 
+	location, err := getRegion(d, config)
+	if err != nil {
+		return fmt.Errorf("Error fetching location for Repository: %s", err)
+	}
+
 	// err == nil indicates that the billing_project value was found
 	if bp, err := getBillingProject(d, config); err == nil {
 		billingProject = bp
@@ -273,6 +278,9 @@ func resourceArtifactRegistryRepositoryRead(d *schema.ResourceData, meta interfa
 	}
 
 	if err := d.Set("project", project); err != nil {
+		return fmt.Errorf("Error reading Repository: %s", err)
+	}
+	if err := d.Set("location", location); err != nil {
 		return fmt.Errorf("Error reading Repository: %s", err)
 	}
 
